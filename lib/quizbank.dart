@@ -54,15 +54,22 @@ class QuizBank {
         answer: true),
   ];
 
+  String get text => this._quizBank[this._quizNumber].text;
+  bool get answer => this._quizBank[this._quizNumber].answer;
+
+  void reset() {
+    this._quizNumber = 0;
+  }
+
   bool next() {
     if (this._quizNumber < this._quizBank.length - 1) {
       this._quizNumber++;
       return true;
-    }
-    else {
+    } else {
       return false;
     }
   }
 
-  bool isCorrect(bool pickedAnswer) => this._quizBank[this._quizNumber].isCorrect(pickedAnswer);
+  bool isCorrect(bool pickedAnswer) =>
+      this._quizBank[this._quizNumber].isCorrect(pickedAnswer);
 }

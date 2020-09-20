@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 import 'quizbank.dart';
 import 'scorekeeper.dart';
-
 
 void main() => runApp(Quizzler());
 
@@ -22,7 +22,6 @@ class Quizzler extends StatelessWidget {
   }
 }
 
-
 class QuizPage extends StatefulWidget {
   @override
   _QuizPageState createState() => _QuizPageState();
@@ -31,6 +30,43 @@ class QuizPage extends StatefulWidget {
 class _QuizPageState extends State<QuizPage> {
   QuizBank quizBank = QuizBank();
   ScoreKeeper scoreKeeper = ScoreKeeper();
+
+  void updateScore(bool pickedAnswer) {
+    if (quizBank.isCorrect(pickedAnswer)) {
+      scoreKeeper.addCorrect();
+    } else {
+      scoreKeeper.addIncorrect();
+    }
+  }
+
+  bool nextQuiz() {
+    return quizBank.next();
+  }
+
+  void reset() {
+    quizBank.reset();
+    scoreKeeper.reset();
+  }
+
+  void showButton() {
+    Alert(
+      context: context,
+      type: AlertType.none,
+      title: 'Finished!',
+      desc:
+          '  You\'ve reached the end of quiz. (Correct: ${scoreKeeper.correctNum}/${scoreKeeper.scoreNum})',
+      buttons: [
+        DialogButton(
+          child: Text(
+            'CANCEL',
+            style: TextStyle(color: Colors.white, fontSize: 20),
+          ),
+          onPressed: () => Navigator.pop(context),
+          width: 220,
+        )
+      ],
+    ).show();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +80,7 @@ class _QuizPageState extends State<QuizPage> {
             padding: EdgeInsets.all(10.0),
             child: Center(
               child: Text(
-                'This is where the question text will go.',
+                this.quizBank.text,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 25.0,
@@ -68,7 +104,16 @@ class _QuizPageState extends State<QuizPage> {
                 ),
               ),
               onPressed: () {
-                //The user picked true.
+                setState(() {
+                  updateScore(true);
+
+                  bool isContinue = nextQuiz();
+
+                  if (!isContinue) {
+                    showButton();
+                    reset();
+                  }
+                });
               },
             ),
           ),
@@ -86,12 +131,24 @@ class _QuizPageState extends State<QuizPage> {
                 ),
               ),
               onPressed: () {
-                //The user picked false.
+                setState(() {
+                  updateScore(false);
+
+                  bool isContinue = nextQuiz();
+
+                  if (!isContinue) {
+                    showButton();
+                    reset();
+                  }
+                });
               },
             ),
           ),
         ),
-        //TODO: Add a Row here as your score keeper
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: scoreKeeper.score,
+        ),
       ],
     );
   }

@@ -1,9 +1,17 @@
 import 'package:flutter/material.dart';
 
 class ScoreKeeper {
+  int _correctNum = 0;
   List<Icon> _score = [];
 
   List<Icon> get score => this._score;
+  int get scoreNum => this._score.length;
+  int get correctNum => this._correctNum;
+
+  void reset() {
+    this._score.clear();
+    this._correctNum = 0;
+  }
 
   void addCorrect() {
     Icon correctIcon = Icon(
@@ -11,6 +19,7 @@ class ScoreKeeper {
       color: Colors.lightGreenAccent,
     );
     _score.add(correctIcon);
+    _correctNum++;
   }
 
   void addIncorrect() {
